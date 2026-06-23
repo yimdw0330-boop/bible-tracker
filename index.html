@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>임개똥 정말똥의 성경 읽기 계획표 📖</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F3ED;
+    --surface: #FFFFFF;
+    --border: #E2D9CE;
+    --text-main: #2C2417;
+    --text-sub: #8C7B68;
+    --husband: #4A7C6F;
+    --husband-light: #E8F2F0;
+    --wife: #8B5E6A;
+    --wife-light: #F5EDF0;
+    --both: #6B5B3E;
+    --accent: #C9A96E;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text-main);
+    font-family: 'Noto Sans KR', sans-serif;
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  .app-header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 20px 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  .app-title {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-main);
+    letter-spacing: -0.3px;
+  }
+
+  .app-title span {
+    color: var(--accent);
+  }
+
+  .progress-pills {
+    display: flex;
+    gap: 8px;
+  }
+
+  .pill {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+
+  .pill.husband { background: var(--husband-light); color: var(--husband); }
+  .pill.wife { background: var(--wife-light); color: var(--wife); }
+
+  /* NAV TABS */
+  .nav-tabs {
+    display: flex;
+    gap: 0;
+  }
+
+  .nav-tab {
+    flex: 1;
+    padding: 10px 0;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-sub);
+    border: none;
+    background: none;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+  }
+
+  .nav-tab.active {
+    color: var(--text-main);
+    border-bottom-color: var(--accent);
+    font-weight: 600;
+  }
+
+  /* PAGES */
+  .page { display: none; padding: 16px; }
+  .page.active { display: block; }
+
+  /* USER SELECT */
+  .user-bar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .user-btn {
+    flex: 1;
+    padding: 10px;
+    border-radius: 10px;
+    border: 2px solid var(--border);
+    background: var(--surface);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    color: var(--text-sub);
+  }
+
+  .user-btn.active.husband {
+    background: var(--husband-light);
+    border-color: var(--husband);
+    color: var(--husband);
+  }
+
+  .user-btn.active.wife {
+    background: var(--wife-light);
+    border-color: var(--wife);
+    color: var(--wife);
+  }
+
+  /* TESTAMENT SECTION */
+  .testament-label {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    color: var(--text-sub);
+    text-transform: uppercase;
+    margin: 20px 0 10px;
+  }
+
+  /* BOOK CARD */
+  .book-card {
+    background: var(--surface);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    margin-bottom: 8px;
+    overflow: hidden;
+  }
+
+  .book-header {
+    display: flex;
+    align-items: center;
+    padding: 12px 14px;
+    cursor: pointer;
+    gap: 10px;
+  }
+
+  .book-name {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .book-progress {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .mini-bar {
+    width: 40px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--border);
+    overflow: hidden;
+  }
+
+  .mini-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.3s;
+  }
+
+  .mini-bar-fill.husband { background: var(--husband); }
+  .mini-bar-fill.wife { background: var(--wife); }
+
+  .book-count {
+    font-size: 11px;
+    color: var(--text-sub);
+  }
+
+  .chevron {
+    font-size: 10px;
+    color: var(--text-sub);
+    transition: transform 0.2s;
+  }
+
+  .book-card.open .chevron { transform: rotate(180deg); }
+
+  .chapters-grid {
+    display: none;
+    padding: 4px 14px 14px;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .book-card.open .chapters-grid { display: flex; }
+
+  .chapter-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: 1.5px solid var(--border);
+    background: var(--bg);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-sub);
+    transition: all 0.15s;
+    position: relative;
+  }
+
+  /* Check states */
+  .chapter-btn.checked-both {
+    background: var(--both);
+    border-color: var(--both);
+    color: white;
+  }
+
+  .chapter-btn.checked-husband {
+    background: var(--husband-light);
+    border-color: var(--husband);
+    color: var(--husband);
+    font-weight: 700;
+  }
+
+  .chapter-btn.checked-wife {
+    background: var(--wife-light);
+    border-color: var(--wife);
+    color: var(--wife);
+    font-weight: 700;
+  }
+
+  /* dot indicators */
+  .chapter-btn::before,
+  .chapter-btn::after {
+    content: '';
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    bottom: 3px;
+  }
+
+  .chapter-btn.has-h::before {
+    background: var(--husband);
+    left: 5px;
+  }
+
+  .chapter-btn.has-w::after {
+    background: var(--wife);
+    right: 5px;
+  }
+
+  /* NOTES PAGE */
+  .note-form {
+    background: var(--surface);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  .form-row {
+    margin-bottom: 12px;
+  }
+
+  .form-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-sub);
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  .form-input, .form-textarea, .form-select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 13px;
+    background: var(--bg);
+    color: var(--text-main);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .form-input:focus, .form-textarea:focus, .form-select:focus {
+    border-color: var(--accent);
+  }
+
+  .form-textarea {
+    min-height: 80px;
+    resize: vertical;
+  }
+
+  .save-btn {
+    width: 100%;
+    padding: 12px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+
+  .save-btn:active { opacity: 0.8; }
+
+  /* NOTE LIST */
+  .notes-filter {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+
+  .filter-btn {
+    padding: 6px 12px;
+    border-radius: 20px;
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-sub);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .filter-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+  }
+
+  .note-card {
+    background: var(--surface);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    padding: 14px;
+    margin-bottom: 8px;
+  }
+
+  .note-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .note-user-badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+
+  .note-user-badge.husband { background: var(--husband-light); color: var(--husband); }
+  .note-user-badge.wife { background: var(--wife-light); color: var(--wife); }
+
+  .note-date {
+    font-size: 11px;
+    color: var(--text-sub);
+  }
+
+  .note-passage {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+
+  .note-text {
+    font-size: 13px;
+    color: var(--text-main);
+    line-height: 1.6;
+    white-space: pre-wrap;
+  }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--text-main);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    opacity: 0;
+    transition: all 0.3s;
+    z-index: 999;
+    pointer-events: none;
+  }
+
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* LOADING */
+  .loading {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-sub);
+    font-size: 13px;
+  }
+
+  .spinner {
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 12px;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-sub);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .empty-icon {
+    font-size: 32px;
+    margin-bottom: 10px;
+  }
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="header-top">
+    <div class="app-title">임개똥 정말똥의<br>성경 읽기 계획표</div>
+    <div class="progress-pills">
+      <div class="pill husband" id="pill-h">개똥 0%</div>
+      <div class="pill wife" id="pill-w">말똥 0%</div>
+    </div>
+  </div>
+  <nav class="nav-tabs">
+    <button class="nav-tab active" onclick="showPage('check')">📖 읽기 체크</button>
+    <button class="nav-tab" onclick="showPage('notes')">✍️ 묵상 기록</button>
+  </nav>
+</header>
+
+<!-- CHECK PAGE -->
+<div class="page active" id="page-check">
+  <div class="user-bar">
+    <button class="user-btn husband active" id="btn-h" onclick="selectUser('husband')">🌿 임개똥</button>
+    <button class="user-btn wife" id="btn-w" onclick="selectUser('wife')">🌸 정말똥</button>
+  </div>
+  <div id="bible-list">
+    <div class="loading"><div class="spinner"></div>불러오는 중...</div>
+  </div>
+</div>
+
+<!-- NOTES PAGE -->
+<div class="page" id="page-notes">
+  <div class="note-form">
+    <div class="form-row">
+      <label class="form-label">기록하는 사람</label>
+      <select class="form-select" id="note-user">
+        <option value="husband">🌿 임개똥</option>
+        <option value="wife">🌸 정말똥</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <label class="form-label">읽은 본문</label>
+      <input class="form-input" id="note-passage" type="text" placeholder="예: 시편 23편, 요한복음 3:16">
+    </div>
+    <div class="form-row">
+      <label class="form-label">묵상 메모</label>
+      <textarea class="form-textarea" id="note-text" placeholder="오늘 말씀에서 마음에 와닿은 것을 적어보세요..."></textarea>
+    </div>
+    <button class="save-btn" onclick="saveNote()">기록 저장</button>
+  </div>
+
+  <div class="notes-filter">
+    <button class="filter-btn active" onclick="filterNotes('all', this)">전체</button>
+    <button class="filter-btn" onclick="filterNotes('husband', this)">🌿 개똥</button>
+    <button class="filter-btn" onclick="filterNotes('wife', this)">🌸 말똥</button>
+  </div>
+
+  <div id="notes-list">
+    <div class="loading"><div class="spinner"></div>불러오는 중...</div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// CONFIG — 배포 후 여기에 GAS URL 입력
+// ============================================================
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbyDef8KH-TcN_EgdKykZUeYNI7YPMy2gDOJLcpgzZumUSqjXU5U5E58O-jPVE5sgrrY/exec';
+
+// ============================================================
+// BIBLE DATA
+// ============================================================
+const BIBLE = {
+  old: [
+    {name:'창세기', abbr:'창', ch:50}, {name:'출애굽기', abbr:'출', ch:40},
+    {name:'레위기', abbr:'레', ch:27}, {name:'민수기', abbr:'민', ch:36},
+    {name:'신명기', abbr:'신', ch:34}, {name:'여호수아', abbr:'수', ch:24},
+    {name:'사사기', abbr:'삿', ch:21}, {name:'룻기', abbr:'룻', ch:4},
+    {name:'사무엘상', abbr:'삼상', ch:31}, {name:'사무엘하', abbr:'삼하', ch:24},
+    {name:'열왕기상', abbr:'왕상', ch:22}, {name:'열왕기하', abbr:'왕하', ch:25},
+    {name:'역대상', abbr:'대상', ch:29}, {name:'역대하', abbr:'대하', ch:36},
+    {name:'에스라', abbr:'스', ch:10}, {name:'느헤미야', abbr:'느', ch:13},
+    {name:'에스더', abbr:'에', ch:10}, {name:'욥기', abbr:'욥', ch:42},
+    {name:'시편', abbr:'시', ch:150}, {name:'잠언', abbr:'잠', ch:31},
+    {name:'전도서', abbr:'전', ch:12}, {name:'아가', abbr:'아', ch:8},
+    {name:'이사야', abbr:'사', ch:66}, {name:'예레미야', abbr:'렘', ch:52},
+    {name:'예레미야애가', abbr:'애', ch:5}, {name:'에스겔', abbr:'겔', ch:48},
+    {name:'다니엘', abbr:'단', ch:12}, {name:'호세아', abbr:'호', ch:14},
+    {name:'요엘', abbr:'욜', ch:3}, {name:'아모스', abbr:'암', ch:9},
+    {name:'오바댜', abbr:'옵', ch:1}, {name:'요나', abbr:'욘', ch:4},
+    {name:'미가', abbr:'미', ch:7}, {name:'나훔', abbr:'나', ch:3},
+    {name:'하박국', abbr:'합', ch:3}, {name:'스바냐', abbr:'습', ch:3},
+    {name:'학개', abbr:'학', ch:2}, {name:'스가랴', abbr:'슥', ch:14},
+    {name:'말라기', abbr:'말', ch:4}
+  ],
+  new: [
+    {name:'마태복음', abbr:'마', ch:28}, {name:'마가복음', abbr:'막', ch:16},
+    {name:'누가복음', abbr:'눅', ch:24}, {name:'요한복음', abbr:'요', ch:21},
+    {name:'사도행전', abbr:'행', ch:28}, {name:'로마서', abbr:'롬', ch:16},
+    {name:'고린도전서', abbr:'고전', ch:16}, {name:'고린도후서', abbr:'고후', ch:13},
+    {name:'갈라디아서', abbr:'갈', ch:6}, {name:'에베소서', abbr:'엡', ch:6},
+    {name:'빌립보서', abbr:'빌', ch:4}, {name:'골로새서', abbr:'골', ch:4},
+    {name:'데살로니가전서', abbr:'살전', ch:5}, {name:'데살로니가후서', abbr:'살후', ch:3},
+    {name:'디모데전서', abbr:'딤전', ch:6}, {name:'디모데후서', abbr:'딤후', ch:4},
+    {name:'디도서', abbr:'딛', ch:3}, {name:'빌레몬서', abbr:'몬', ch:1},
+    {name:'히브리서', abbr:'히', ch:13}, {name:'야고보서', abbr:'약', ch:5},
+    {name:'베드로전서', abbr:'벧전', ch:5}, {name:'베드로후서', abbr:'벧후', ch:3},
+    {name:'요한일서', abbr:'요일', ch:5}, {name:'요한이서', abbr:'요이', ch:1},
+    {name:'요한삼서', abbr:'요삼', ch:1}, {name:'유다서', abbr:'유', ch:1},
+    {name:'요한계시록', abbr:'계', ch:22}
+  ]
+};
+
+const TOTAL_CHAPTERS = 1189;
+
+// ============================================================
+// STATE
+// ============================================================
+let currentUser = 'husband';
+let checks = {}; // { 'bookName-ch': {husband: bool, wife: bool} }
+let notes = [];
+let notesFilter = 'all';
+
+// ============================================================
+// INIT
+// ============================================================
+async function init() {
+  renderBible();
+  await loadData();
+  updateProgress();
+}
+
+// ============================================================
+// DATA — GAS or localStorage fallback
+// ============================================================
+async function loadData() {
+  if (GAS_URL === 'YOUR_GAS_URL_HERE') {
+    // localStorage fallback (개발용)
+    const saved = localStorage.getItem('bible_checks');
+    if (saved) checks = JSON.parse(saved);
+    const savedNotes = localStorage.getItem('bible_notes');
+    if (savedNotes) notes = JSON.parse(savedNotes);
+    renderBible();
+    renderNotes();
+    return;
+  }
+  try {
+    const res = await fetch(`${GAS_URL}?action=load`);
+    const data = await res.json();
+    checks = data.checks || {};
+    notes = data.notes || [];
+    renderBible();
+    renderNotes();
+  } catch(e) {
+    showToast('데이터 불러오기 실패 — 오프라인 모드');
+  }
+}
+
+async function saveCheck(bookName, ch, user, checked) {
+  const key = `${bookName}-${ch}`;
+  if (!checks[key]) checks[key] = {};
+  checks[key][user] = checked;
+
+  if (GAS_URL === 'YOUR_GAS_URL_HERE') {
+    localStorage.setItem('bible_checks', JSON.stringify(checks));
+    return;
+  }
+  try {
+    await fetch(GAS_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'check', bookName, ch, user, checked })
+    });
+  } catch(e) { /* silent */ }
+}
+
+async function saveNote() {
+  const user = document.getElementById('note-user').value;
+  const passage = document.getElementById('note-passage').value.trim();
+  const text = document.getElementById('note-text').value.trim();
+  if (!passage || !text) { showToast('본문과 메모를 입력해주세요'); return; }
+
+  const note = {
+    id: Date.now(),
+    user,
+    passage,
+    text,
+    date: new Date().toLocaleDateString('ko-KR', {month:'long', day:'numeric', weekday:'short'})
+  };
+
+  notes.unshift(note);
+  document.getElementById('note-passage').value = '';
+  document.getElementById('note-text').value = '';
+
+  if (GAS_URL === 'YOUR_GAS_URL_HERE') {
+    localStorage.setItem('bible_notes', JSON.stringify(notes));
+  } else {
+    try {
+      await fetch(GAS_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'note', note })
+      });
+    } catch(e) { /* silent */ }
+  }
+
+  renderNotes();
+  showToast('묵상이 기록됐어요 🌿');
+}
+
+// ============================================================
+// RENDER
+// ============================================================
+function renderBible() {
+  const container = document.getElementById('bible-list');
+  container.innerHTML = '';
+
+  const sections = [
+    { label: '구약 · Old Testament', books: BIBLE.old },
+    { label: '신약 · New Testament', books: BIBLE.new }
+  ];
+
+  sections.forEach(section => {
+    const label = document.createElement('div');
+    label.className = 'testament-label';
+    label.textContent = section.label;
+    container.appendChild(label);
+
+    section.books.forEach(book => {
+      container.appendChild(makeBookCard(book));
+    });
+  });
+}
+
+function makeBookCard(book) {
+  const card = document.createElement('div');
+  card.className = 'book-card';
+  card.id = `book-${book.abbr}`;
+
+  let hCount = 0, wCount = 0;
+  for (let i = 1; i <= book.ch; i++) {
+    const key = `${book.name}-${i}`;
+    if (checks[key]?.husband) hCount++;
+    if (checks[key]?.wife) wCount++;
+  }
+
+  const hPct = Math.round(hCount / book.ch * 100);
+  const wPct = Math.round(wCount / book.ch * 100);
+
+  card.innerHTML = `
+    <div class="book-header" onclick="toggleBook('${book.abbr}')">
+      <span class="book-name">${book.name}</span>
+      <div class="book-progress">
+        <div class="mini-bar"><div class="mini-bar-fill husband" style="width:${hPct}%"></div></div>
+        <div class="mini-bar"><div class="mini-bar-fill wife" style="width:${wPct}%"></div></div>
+        <span class="book-count">${book.ch}장</span>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="chapters-grid" id="chapters-${book.abbr}"></div>
+  `;
+
+  const grid = card.querySelector(`#chapters-${book.abbr}`);
+  for (let i = 1; i <= book.ch; i++) {
+    grid.appendChild(makeChapterBtn(book, i));
+  }
+
+  return card;
+}
+
+function makeChapterBtn(book, ch) {
+  const key = `${book.name}-${ch}`;
+  const state = checks[key] || {};
+  const btn = document.createElement('button');
+  btn.className = 'chapter-btn';
+  btn.id = `ch-${book.abbr}-${ch}`;
+  btn.textContent = ch;
+  updateChapterBtn(btn, state);
+  btn.onclick = () => toggleChapter(book, ch, btn);
+  return btn;
+}
+
+function updateChapterBtn(btn, state) {
+  btn.className = 'chapter-btn';
+  if (state.husband && state.wife) {
+    btn.classList.add('checked-both');
+  } else if (state.husband) {
+    btn.classList.add('checked-husband');
+    btn.classList.add('has-h');
+  } else if (state.wife) {
+    btn.classList.add('checked-wife');
+    btn.classList.add('has-w');
+  }
+}
+
+function renderNotes() {
+  const container = document.getElementById('notes-list');
+  const filtered = notesFilter === 'all' ? notes : notes.filter(n => n.user === notesFilter);
+
+  if (filtered.length === 0) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">📝</div>아직 묵상 기록이 없어요.<br>오늘 읽은 말씀을 기록해보세요!</div>`;
+    return;
+  }
+
+  container.innerHTML = filtered.map(note => `
+    <div class="note-card">
+      <div class="note-meta">
+        <span class="note-user-badge ${note.user}">${note.user === 'husband' ? '🌿 임개똥' : '🌸 정말똥'}</span>
+        <span class="note-date">${note.date}</span>
+      </div>
+      <div class="note-passage">${note.passage}</div>
+      <div class="note-text">${note.text}</div>
+    </div>
+  `).join('');
+}
+
+// ============================================================
+// INTERACTIONS
+// ============================================================
+function toggleBook(abbr) {
+  const card = document.getElementById(`book-${abbr}`);
+  card.classList.toggle('open');
+}
+
+function toggleChapter(book, ch, btn) {
+  const key = `${book.name}-${ch}`;
+  if (!checks[key]) checks[key] = {};
+  const current = checks[key][currentUser];
+  checks[key][currentUser] = !current;
+  updateChapterBtn(btn, checks[key]);
+  saveCheck(book.name, ch, currentUser, !current);
+  updateProgress();
+  refreshBookProgress(book);
+  showToast(checks[key][currentUser] ? `${book.abbr} ${ch}장 ✓` : `${book.abbr} ${ch}장 체크 해제`);
+}
+
+function refreshBookProgress(book) {
+  const card = document.getElementById(`book-${book.abbr}`);
+  if (!card) return;
+  let hCount = 0, wCount = 0;
+  for (let i = 1; i <= book.ch; i++) {
+    const key = `${book.name}-${i}`;
+    if (checks[key]?.husband) hCount++;
+    if (checks[key]?.wife) wCount++;
+  }
+  const hPct = Math.round(hCount / book.ch * 100);
+  const wPct = Math.round(wCount / book.ch * 100);
+  const bars = card.querySelectorAll('.mini-bar-fill');
+  bars[0].style.width = hPct + '%';
+  bars[1].style.width = wPct + '%';
+}
+
+function selectUser(user) {
+  currentUser = user;
+  document.getElementById('btn-h').classList.toggle('active', user === 'husband');
+  document.getElementById('btn-w').classList.toggle('active', user === 'wife');
+}
+
+function showPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(`page-${page}`).classList.add('active');
+  event.target.classList.add('active');
+  if (page === 'notes') renderNotes();
+}
+
+function filterNotes(filter, btn) {
+  notesFilter = filter;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderNotes();
+}
+
+function updateProgress() {
+  let hTotal = 0, wTotal = 0;
+  Object.values(checks).forEach(c => {
+    if (c.husband) hTotal++;
+    if (c.wife) wTotal++;
+  });
+  const hPct = Math.round(hTotal / TOTAL_CHAPTERS * 100);
+  const wPct = Math.round(wTotal / TOTAL_CHAPTERS * 100);
+  document.getElementById('pill-h').textContent = `개똥 ${hPct}%`;
+  document.getElementById('pill-w').textContent = `말똥 ${wPct}%`;
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// ============================================================
+// START
+// ============================================================
+init();
+</script>
+</body>
+</html>
